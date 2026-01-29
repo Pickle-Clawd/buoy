@@ -1,0 +1,16 @@
+{
+  "name": "buoy",
+  "version": "1.0.0",
+  "description": "Self-hosted uptime monitoring dashboard with an ocean-themed UI",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": ["uptime", "monitoring", "dashboard", "status"],
+  "license": "MIT",
+  "dependencies": {
+    "better-sqlite3": "^11.7.0",
+    "express": "^4.21.0"
+  }
+}

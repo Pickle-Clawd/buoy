@@ -1,0 +1,224 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --deep-blue: #0b1628;
+  --navy: #132743;
+  --teal: #1a7a6d;
+  --teal-light: #2ec4b6;
+  --coral: #e76f51;
+  --coral-light: #f4a261;
+  --sea-foam: #a8dadc;
+  --white: #f1faee;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --gray: #457b9d;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--deep-blue);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  padding: 2rem;
+  text-align: center;
+  border-bottom: 3px solid var(--teal-light);
+}
+
+header h1 {
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.tagline {
+  color: var(--sea-foam);
+  margin-top: 0.25rem;
+  font-size: 0.95rem;
+}
+
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  flex: 1;
+  width: 100%;
+}
+
+.add-monitor {
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 2rem;
+  border: 1px solid var(--gray);
+}
+
+.add-monitor h2 {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: var(--teal-light);
+}
+
+#add-form {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+#add-form input,
+#add-form select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--gray);
+  border-radius: 4px;
+  background: var(--deep-blue);
+  color: var(--white);
+  font-size: 0.9rem;
+}
+
+#add-form input[type="text"] { flex: 1; min-width: 120px; }
+#add-form input[type="url"] { flex: 2; min-width: 200px; }
+
+#add-form button {
+  padding: 0.5rem 1.25rem;
+  background: var(--teal);
+  color: var(--white);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.2s;
+}
+
+#add-form button:hover {
+  background: var(--teal-light);
+  color: var(--deep-blue);
+}
+
+.monitors {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.loading {
+  text-align: center;
+  color: var(--gray);
+  padding: 2rem;
+}
+
+.monitor-card {
+  background: var(--navy);
+  border-radius: 8px;
+  padding: 1.25rem;
+  border: 1px solid var(--gray);
+  transition: border-color 0.2s;
+}
+
+.monitor-card:hover {
+  border-color: var(--teal-light);
+}
+
+.monitor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.monitor-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.status-dot.up { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.down { background: var(--red); box-shadow: 0 0 6px var(--red); }
+.status-dot.unknown { background: var(--gray); }
+
+.monitor-name {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+
+.monitor-url {
+  color: var(--gray);
+  font-size: 0.8rem;
+}
+
+.monitor-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.uptime-badge {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sea-foam);
+}
+
+.delete-btn {
+  background: none;
+  border: 1px solid var(--coral);
+  color: var(--coral);
+  padding: 0.25rem 0.6rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s;
+}
+
+.delete-btn:hover {
+  background: var(--coral);
+  color: var(--white);
+}
+
+.monitor-details {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--gray);
+  margin-bottom: 0.75rem;
+}
+
+.sparkline-container {
+  height: 32px;
+  display: flex;
+  align-items: end;
+  gap: 1px;
+}
+
+.sparkline-bar {
+  width: 6px;
+  border-radius: 2px 2px 0 0;
+  min-height: 2px;
+  transition: height 0.2s;
+}
+
+.sparkline-bar.up { background: var(--teal-light); }
+.sparkline-bar.down { background: var(--coral); }
+.sparkline-bar.slow { background: var(--coral-light); }
+
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--gray);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--navy);
+}

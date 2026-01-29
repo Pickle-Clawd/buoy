@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buoy — Uptime Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-content">
+      <h1>&#9906; Buoy</h1>
+      <p class="tagline">Track your services like a buoy tracks the tide</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="add-monitor">
+      <h2>Add Monitor</h2>
+      <form id="add-form">
+        <input type="text" id="mon-name" placeholder="Name" required>
+        <input type="url" id="mon-url" placeholder="https://example.com" required>
+        <select id="mon-interval">
+          <option value="30">Every 30s</option>
+          <option value="60" selected>Every 1 min</option>
+          <option value="120">Every 2 min</option>
+          <option value="300">Every 5 min</option>
+        </select>
+        <button type="submit">Add</button>
+      </form>
+    </section>
+
+    <section class="monitors" id="monitors">
+      <p class="loading">Loading monitors...</p>
+    </section>
+  </main>
+
+  <footer>
+    <p>Buoy &mdash; Self-hosted uptime monitoring</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
