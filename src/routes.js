@@ -2,8 +2,36 @@ const express = require('express');
 const db = require('./db');
 const config = require('../config');
 const { startMonitor, stopMonitor } = require('./monitor');
+const { createToken, requireAdmin } = require('./auth');
 
 const router = express.Router();
+
+// Auth: check current auth status
+router.get('/api/auth/status', (req, res) => {
+  res.json({ authenticated: req.isAdmin });
+});
+
+// Auth: login
+router.post('/api/auth/login', (req, res) => {
+  const { password } = req.body;
+  if (password !== config.adminPassword) {
+    return res.status(401).json({ error: 'Invalid password' });
+  }
+  const token = createToken();
+  res.cookie('buoy_token', token, {
+    httpOnly: true,
+    sameSite: 'strict',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === 'production',
+  });
+  res.json({ success: true });
+});
+
+// Auth: logout
+router.post('/api/auth/logout', (req, res) => {
+  res.clearCookie('buoy_token');
+  res.json({ success: true });
+});
 
 // Get all monitors with latest status
 router.get('/api/monitors', (req, res) => {
@@ -40,7 +68,7 @@ router.get('/api/monitors', (req, res) => {
 });
 
 // Add a new monitor
-router.post('/api/monitors', (req, res) => {
+router.post('/api/monitors', requireAdmin, (req, res) => {
   const { name, url, interval } = req.body;
 
   if (!name || !url) {
@@ -62,7 +90,7 @@ router.post('/api/monitors', (req, res) => {
 });
 
 // Delete a monitor
-router.delete('/api/monitors/:id', (req, res) => {
+router.delete('/api/monitors/:id', requireAdmin, (req, res) => {
   const { id } = req.params;
   stopMonitor(parseInt(id));
   db.prepare('DELETE FROM monitors WHERE id = ?').run(id);

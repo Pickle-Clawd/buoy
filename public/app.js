@@ -1,6 +1,86 @@
 const monitorsEl = document.getElementById('monitors');
 const form = document.getElementById('add-form');
+const addMonitorSection = document.getElementById('add-monitor-section');
+const authBtn = document.getElementById('auth-btn');
+const logoutBtn = document.getElementById('logout-btn');
+const authModal = document.getElementById('auth-modal');
 
+let isAuthenticated = false;
+
+// Auth state management
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/auth/status');
+    const data = await res.json();
+    isAuthenticated = data.authenticated;
+    updateAuthUI();
+  } catch {
+    isAuthenticated = false;
+    updateAuthUI();
+  }
+}
+
+function updateAuthUI() {
+  if (isAuthenticated) {
+    addMonitorSection.style.display = '';
+    authBtn.style.display = 'none';
+    logoutBtn.style.display = 'flex';
+  } else {
+    addMonitorSection.style.display = 'none';
+    authBtn.style.display = 'flex';
+    logoutBtn.style.display = 'none';
+  }
+  // Re-render monitors to show/hide delete buttons
+  refresh();
+}
+
+window.toggleAuthModal = function () {
+  authModal.style.display = authModal.style.display === 'none' ? 'flex' : 'none';
+  if (authModal.style.display === 'flex') {
+    document.getElementById('login-password').focus();
+  }
+};
+
+window.closeAuthModal = function () {
+  authModal.style.display = 'none';
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-password').value = '';
+};
+
+window.handleLogin = async function (e) {
+  e.preventDefault();
+  const password = document.getElementById('login-password').value;
+  const errorEl = document.getElementById('login-error');
+
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ password }),
+    });
+
+    if (res.ok) {
+      isAuthenticated = true;
+      closeAuthModal();
+      updateAuthUI();
+    } else {
+      errorEl.textContent = 'Incorrect password';
+      errorEl.style.display = '';
+      document.getElementById('login-password').select();
+    }
+  } catch {
+    errorEl.textContent = 'Connection error';
+    errorEl.style.display = '';
+  }
+};
+
+window.logout = async function () {
+  await fetch('/api/auth/logout', { method: 'POST' });
+  isAuthenticated = false;
+  updateAuthUI();
+};
+
+// Monitor data
 async function fetchMonitors() {
   const res = await fetch('/api/monitors');
   return res.json();
@@ -29,6 +109,10 @@ function renderMonitor(m) {
   const responseTime = m.latestCheck ? `${m.latestCheck.response_time}ms` : '--';
   const uptimeText = m.uptime !== null ? `${m.uptime}%` : '--';
 
+  const deleteBtn = isAuthenticated
+    ? `<button class="delete-btn" onclick="deleteMonitor(${m.id})">Remove</button>`
+    : '';
+
   return `
     <div class="monitor-card">
       <div class="monitor-header">
@@ -41,7 +125,7 @@ function renderMonitor(m) {
         </div>
         <div class="monitor-actions">
           <span class="uptime-badge">${uptimeText} uptime</span>
-          <button class="delete-btn" onclick="deleteMonitor(${m.id})">Remove</button>
+          ${deleteBtn}
         </div>
       </div>
       <div class="monitor-details">
@@ -69,9 +153,14 @@ async function refresh() {
   monitorsEl.innerHTML = monitors.map(renderMonitor).join('');
 }
 
-window.deleteMonitor = async function(id) {
+window.deleteMonitor = async function (id) {
   if (!confirm('Remove this monitor?')) return;
-  await fetch(`/api/monitors/${id}`, { method: 'DELETE' });
+  const res = await fetch(`/api/monitors/${id}`, { method: 'DELETE' });
+  if (res.status === 401) {
+    isAuthenticated = false;
+    updateAuthUI();
+    return;
+  }
   refresh();
 };
 
@@ -81,15 +170,22 @@ form.addEventListener('submit', async (e) => {
   const url = document.getElementById('mon-url').value;
   const interval = parseInt(document.getElementById('mon-interval').value);
 
-  await fetch('/api/monitors', {
+  const res = await fetch('/api/monitors', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ name, url, interval }),
   });
 
+  if (res.status === 401) {
+    isAuthenticated = false;
+    updateAuthUI();
+    return;
+  }
+
   form.reset();
   refresh();
 });
 
-refresh();
+// Initialize
+checkAuth();
 setInterval(refresh, 10000);

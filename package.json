@@ -7,10 +7,17 @@
     "start": "node src/server.js",
     "dev": "node --watch src/server.js"
   },
-  "keywords": ["uptime", "monitoring", "dashboard", "status"],
+  "keywords": [
+    "uptime",
+    "monitoring",
+    "dashboard",
+    "status"
+  ],
   "license": "MIT",
   "dependencies": {
     "better-sqlite3": "^11.7.0",
-    "express": "^4.21.0"
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.0",
+    "jsonwebtoken": "^9.0.3"
   }
 }
